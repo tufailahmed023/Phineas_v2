@@ -1,0 +1,10 @@
+# This file is used to install the required packages for the project.
+ollama
+langchain
+langchain-community
+langchain-ollama
+pypdf
+chromadb
+streamlit
+streamlit-chat
+langchain-chroma>=0.1.2

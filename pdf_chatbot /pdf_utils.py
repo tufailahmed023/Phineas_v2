@@ -12,16 +12,18 @@ from langchain.chains import ConversationalRetrievalChain
 from langchain.memory import ConversationBufferMemory
 from langchain_ollama.llms import OllamaLLM
 
-from vectordb import get_vectorstore
+from vectordb import get_vectorstore,pdf_file_path
 
 
 model_embedding ="nomic-embed-text:latest"
 model_llm = 'llama3.2:3b'
-collection_name="pdfs"
+collection_name= os.path.basename(pdf_file_path).lower()
 persist_directory = os.path.join('.', 'chroma_db')  # Change this to your desired path
 
 
 def get_pdf_text_emd(pdf_path, log_file="processed_pdfs.txt", output_folder="extracted_texts"):
+
+    log_file = f'{collection_name}_{log_file}'
 
     output_folder_path = os.path.join(os.path.abspath(os.curdir),output_folder)
     if os.path.exists(output_folder_path) == False :

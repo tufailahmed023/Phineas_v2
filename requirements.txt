@@ -8,3 +8,4 @@ chromadb
 streamlit
 streamlit-chat
 langchain-chroma>=0.1.2
+watchdog

@@ -1,3 +1,12 @@
+import base64
+
+def get_base64_image(image_path):
+    with open(image_path, "rb") as img_file:
+        encoded = base64.b64encode(img_file.read()).decode()
+    return f"data:image/webp;base64,{encoded}"
+
+bot_avatar_base64 = get_base64_image("Images/phineas.webp")
+
 css = '''
 <style>
 /* Global chat container styles */
@@ -105,13 +114,13 @@ css = '''
 </style>
 '''
 
-bot_template = '''
-<div class="chat-message bot">
-    <div class="avatar">
-        <span>AI</span>
-    </div>
-    <div class="message">{{MSG}}</div>
-</div> '''
+# bot_template = '''
+# <div class="chat-message bot">
+#     <div class="avatar">
+#         <span>Images/phineas.webp</span>
+#     </div>
+#     <div class="message">{{MSG}}</div>
+# </div> '''
 
 user_template = '''
 <div class="chat-message user">
@@ -120,3 +129,13 @@ user_template = '''
     </div>
     <div class="message">{{MSG}}</div>
     </div> '''
+
+
+bot_template = f'''
+<div class="chat-message bot">
+    <div class="avatar">
+        <img src="{bot_avatar_base64}" alt="Phineas Avatar" style="width: 30px; height: 30px; border-radius: 2px;" />
+    </div>
+    <div class="message">{{{{MSG}}}}</div>
+</div>
+'''

@@ -6,9 +6,10 @@ from vectordb import pdf_file_path
 
 
 # print(os.path.basename(pdf_file_path).lower())
-print("Loading PDF and extracting text...")
 log_file="processed_pdfs.txt"
 output_folder="extracted_texts"
-pdf_file_path = pdf_file_path
 
-get_pdf_text_emd(pdf_file_path)
+if __name__ == '__main__':
+    print("Loading PDF and extracting text...")
+    pdf_file_path = pdf_file_path
+    get_pdf_text_emd(pdf_file_path)

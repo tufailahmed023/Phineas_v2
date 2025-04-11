@@ -169,6 +169,7 @@ def build_prompt(user_query: str, retrieved_context: str = "") -> str:
     - ALWAYS cite the specific policy section when available (e.g., "According to Section 3.2 of the Leave Policy...")
     - Maintain a helpful, professional, and concise tone
     - Do not assign any full form for abbreviations on your own, always refer to data or ask the user back for clarification.
+    - Only answer for the given question and its context, even though it applies to other areas well. Always answer the asked question and do not add additional information in the question
     """.strip()
     
     # Enhanced example Q&A with more realistic policy language and better formatting

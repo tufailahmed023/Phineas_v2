@@ -11,6 +11,8 @@ from langchain_core.documents import Document
 from langchain.chains import ConversationalRetrievalChain
 from langchain.memory import ConversationBufferMemory
 from langchain_ollama.llms import OllamaLLM
+from langchain.prompts import PromptTemplate
+
 
 from vectordb import get_vectorstore,pdf_file_path
 
@@ -103,31 +105,60 @@ def get_pdf_text_emd(pdf_path, log_file="processed_pdfs.txt", output_folder="ext
     return 
 
 
-def get_llm(): 
-    llm = OllamaLLM(model=model_llm, temperature=0.1, max_tokens=1000)
+def get_llm(temperature = 0.1): 
+    llm = OllamaLLM(model=model_llm,
+                    temperature=temperature,  # Lower for more factual responses
+                    repeat_penalty=1.1,       # Discourage repetition
+                    top_k=40,                 # Consider more token possibilities
+                    top_p=0.95,               # Sample from more probable tokens
+                    num_ctx=4096)              # Larger context window for better understanding)
     return llm 
 
 
-def get_conversation_chain(retriever,llm):
+# def get_conversation_chain(retriever,llm):
     
+    # memory = ConversationBufferMemory(
+    #                     memory_key='chat_history', 
+    #                     return_messages=True,
+    #                     input_key='question',    
+    #                     output_key='answer')
+    
+    # conversation_chain = ConversationalRetrievalChain.from_llm(
+    #     llm=llm,
+    #     retriever=retriever,
+    #     memory=memory,
+    #     return_source_documents=True,
+    #     output_key="answer"
+    # )
+    # return conversation_chain
+
+def get_conversation_chain(retriever, llm):
+    """Create a conversation chain with enhanced prompt template and memory"""
+    # Create an improved prompt template
+    prompt = PromptTemplate(
+        input_variables=["context", "question", "chat_history"],
+    )
+    
+    # Create a memory buffer that retains conversation context
     memory = ConversationBufferMemory(
-                        memory_key='chat_history', 
-                        return_messages=True,
-                        input_key='question',    
-                        output_key='answer')
+        memory_key="chat_history",
+        return_messages=True,
+        output_key="answer"
+    )
     
+    # Create the conversation chain with the improved components
     conversation_chain = ConversationalRetrievalChain.from_llm(
         llm=llm,
         retriever=retriever,
         memory=memory,
+        combine_docs_chain_kwargs={"prompt": prompt},
         return_source_documents=True,
-        output_key="answer"
+        verbose=True
     )
-    return conversation_chain
 
-def build_prompt(user_query: str, retrieved_context: str = "", user_team: str = "General") -> str:
+def build_prompt(user_query: str, retrieved_context: str = "") -> str:
     system_prompt = f"""
-    You are a professional HR/IT policy assistant for an organization, specifically supporting {user_team}.
+    You are a professional HR/IT policy assistant for an organization.
     
     Your primary responsibilities:
     - Answer employee queries based ONLY on the company's official HR or IT policies provided in the context
@@ -137,21 +168,15 @@ def build_prompt(user_query: str, retrieved_context: str = "", user_team: str = 
     - Format responses in a clear, structured way
     - ALWAYS cite the specific policy section when available (e.g., "According to Section 3.2 of the Leave Policy...")
     - Maintain a helpful, professional, and concise tone
+    - Do not assign any full form for abbreviations on your own, always refer to data or ask the user back for clarification.
     """.strip()
     
     # Enhanced example Q&A with more realistic policy language and better formatting
     example_qna = """
     Example Q&A:
     
-    Q: How many leaves can I take in a year?
-    A: According to Section 2.1 of the Leave Policy:
-    • Full-time employees are entitled to 24 paid leaves annually
-    • This includes 12 sick leaves and 12 casual leaves
-    • Up to 5 unused leaves can be carried forward to the next year
-    • Any additional unused leaves will lapse on December 31st
-    
     Q: Can I access my emails while on leave?
-    A: According to Section 4.3 of the IT Acceptable Use Policy:
+    A: According to the IT Acceptable Use Policy:
     • Employees are not required to check or respond to emails during approved leave periods
     • For critical roles, an alternative point of contact should be provided before going on leave
     • If you must access work systems during leave, document this time as it may affect your leave balance

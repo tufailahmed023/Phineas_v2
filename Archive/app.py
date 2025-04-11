@@ -10,19 +10,19 @@ import time
 import logging
 
 # Import Redis functions with error handling
-try:
-    from redisdb import get_similar_from_cache, store_in_cache
-    REDIS_AVAILABLE = True
-except Exception as e:
-    # Define placeholder functions if Redis is unavailable
-    def get_similar_from_cache(*args, **kwargs):
-        return None
+# try:
+#     from redisdb import get_similar_from_cache, store_in_cache
+#     REDIS_AVAILABLE = True
+# except Exception as e:
+#     # Define placeholder functions if Redis is unavailable
+#     def get_similar_from_cache(*args, **kwargs):
+#         return None
     
-    def store_in_cache(*args, **kwargs):
-        pass
+#     def store_in_cache(*args, **kwargs):
+#         pass
     
-    REDIS_AVAILABLE = False
-    print(f"Warning: Redis functionality disabled - {str(e)}")
+#     REDIS_AVAILABLE = False
+#     print(f"Warning: Redis functionality disabled - {str(e)}")
 
 # Setup logging
 logger = logging.getLogger(__name__)

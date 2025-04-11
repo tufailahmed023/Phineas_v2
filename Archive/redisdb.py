@@ -2,6 +2,8 @@ import redis
 import numpy as np
 import json
 
+redis_client = redis.Redis(host='localhost', port=6383, db=0)
+
 # Cosine similarity
 def cosine_similarity(a, b):
     return np.dot(a, b) / (np.linalg.norm(a) * np.linalg.norm(b))
@@ -16,7 +18,6 @@ def store_in_cache(query, response, embedding):
 
 # Try to retrieve semantically similar answer
 def get_similar_from_cache(query_embedding, threshold=0.90):
-    redis_client = redis.Redis(host='localhost', port=6383, db=0)
     for key in redis_client.scan_iter(match="q:*"):
         data = json.loads(redis_client.get(key))
         cached_embedding = np.array(data['embedding'])

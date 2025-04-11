@@ -1,56 +1,106 @@
 css = '''
 <style>
+/* Global chat container styles */
+.chat-container {
+    max-width: 800px;
+    margin: 0 auto;
+    font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+/* Message styles */
 .chat-message {
     padding: 1.5rem;
-    border-radius: 1.5rem;
-    margin-bottom: 1.2rem;
+    margin-bottom: 1rem;
+    display: flex;
+    line-height: 1.6;
+}
+
+/* User message styles */
+.chat-message.user {
+    background-color: #F7F7F8;
+}
+
+/* Bot message styles */
+.chat-message.bot {
+    background-color: #FFFFFF;
+    border-bottom: 1px solid #EAEAEA;
+}
+
+/* Avatar styling */
+.chat-message .avatar {
+    width: 30px;
+    height: 30px;
+    margin-right: 15px;
+    flex-shrink: 0;
+    border-radius: 2px;
+    overflow: hidden;
     display: flex;
     align-items: center;
-    backdrop-filter: blur(8px);
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.15);
-    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.2);
-    transition: all 0.3s ease-in-out;
+    justify-content: center;
 }
 
-.chat-message.user {
-    background: linear-gradient(135deg, #2e3b4e, #3a465e);
-    border-left: 6px solid #00ff99;
+/* User avatar specific */
+.chat-message.user .avatar {
+    background-color: #5536DA;
+    color: white;
+    font-weight: bold;
 }
 
-.chat-message.bot {
-    background: linear-gradient(135deg, #4a5568, #5a6a82);
-    border-left: 6px solid #f39c12;
+/* Bot avatar specific */
+.chat-message.bot .avatar {
+    background-color: #19C37D;
+    color: white;
+    font-weight: bold;
 }
 
-.chat-message .avatar {
-    width: 60px;
-    height: 60px;
-    margin-right: 1rem;
-    flex-shrink: 0;
-}
-
-.chat-message .avatar img {
-    width: 100%;
-    height: 100%;
-    border-radius: 50%;
-    object-fit: cover;
-    border: 2px solid #fff;
-    box-shadow: 0 0 8px rgba(255, 255, 255, 0.4);
-    transition: transform 0.3s ease-in-out;
-}
-
-.chat-message .avatar img:hover {
-    transform: scale(1.1);
-}
-
+/* Message content */
 .chat-message .message {
     flex: 1;
-    padding: 0 1rem;
-    color: #f0f0f0;
+    color: #343541;
     font-size: 1rem;
-    line-height: 1.6;
-    font-family: 'Segoe UI', sans-serif;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+}
+
+/* Code block styling */
+.chat-message .message pre {
+    background-color: #F7F7F8;
+    border-radius: 6px;
+    padding: 12px;
+    overflow-x: auto;
+    font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+    font-size: 0.9rem;
+}
+
+/* Better markdown formatting */
+.chat-message .message p {
+    margin-bottom: 0.8rem;
+}
+
+.chat-message .message ul, 
+.chat-message .message ol {
+    margin-left: 1.5rem;
+    margin-bottom: 0.8rem;
+}
+
+.chat-message .message code {
+    background-color: #F7F7F8;
+    border-radius: 3px;
+    padding: 2px 4px;
+    font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+    font-size: 0.9em;
+}
+
+/* Responsive design */
+@media (max-width: 640px) {
+    .chat-message {
+        padding: 1rem;
+    }
+    .chat-message .avatar {
+        width: 25px;
+        height: 25px;
+        margin-right: 10px;
+    }
 }
 </style>
 '''
@@ -58,16 +108,15 @@ css = '''
 bot_template = '''
 <div class="chat-message bot">
     <div class="avatar">
-        <img src="https://images.unsplash.com/photo-1610394212179-8a5bb0c82a0f?auto=format&fit=crop&w=80&q=80" alt="Bot Avatar">
+        <span>AI</span>
     </div>
     <div class="message">{{MSG}}</div>
 </div> '''
 
 user_template = '''
-    <div class="chat-message user">
+<div class="chat-message user">
     <div class="avatar">
-        <img src="https://images.unsplash.com/photo-1527980965255-d3b416303d12?auto=format&fit=crop&w=80&q=80" alt="User Avatar">
+        <span>U</span>
     </div>
     <div class="message">{{MSG}}</div>
-</div> '''
-
+    </div> '''

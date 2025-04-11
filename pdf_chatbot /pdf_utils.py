@@ -115,6 +115,7 @@ def get_conversation_chain(retriever,llm):
                         return_messages=True,
                         input_key='question',    
                         output_key='answer')
+    
     conversation_chain = ConversationalRetrievalChain.from_llm(
         llm=llm,
         retriever=retriever,
@@ -124,3 +125,65 @@ def get_conversation_chain(retriever,llm):
     )
     return conversation_chain
 
+def build_prompt(user_query: str, retrieved_context: str = "", user_team: str = "General") -> str:
+    system_prompt = f"""
+    You are a professional HR/IT policy assistant for an organization, specifically supporting {user_team}.
+    
+    Your primary responsibilities:
+    - Answer employee queries based ONLY on the company's official HR or IT policies provided in the context
+    - NEVER guess, speculate, or make up information
+    - If the information isn't available in the policy documents, respond with: "This information is not available in the policy documents. Please contact HR at hr@company.com or IT at support@company.com for assistance."
+    - If the question is ambiguous, ask clarifying questions
+    - Format responses in a clear, structured way
+    - ALWAYS cite the specific policy section when available (e.g., "According to Section 3.2 of the Leave Policy...")
+    - Maintain a helpful, professional, and concise tone
+    """.strip()
+    
+    # Enhanced example Q&A with more realistic policy language and better formatting
+    example_qna = """
+    Example Q&A:
+    
+    Q: How many leaves can I take in a year?
+    A: According to Section 2.1 of the Leave Policy:
+    • Full-time employees are entitled to 24 paid leaves annually
+    • This includes 12 sick leaves and 12 casual leaves
+    • Up to 5 unused leaves can be carried forward to the next year
+    • Any additional unused leaves will lapse on December 31st
+    
+    Q: Can I access my emails while on leave?
+    A: According to Section 4.3 of the IT Acceptable Use Policy:
+    • Employees are not required to check or respond to emails during approved leave periods
+    • For critical roles, an alternative point of contact should be provided before going on leave
+    • If you must access work systems during leave, document this time as it may affect your leave balance
+    
+    Q: What is our policy on remote work?
+    A: This information is not available in the policy documents provided. Please contact HR at hr@company.com for the latest remote work policy.
+    """.strip()
+    
+    # Additional conditioning to help with policy interpretation
+    policy_guidance = """
+    When interpreting policies:
+    • Present all relevant conditions and exceptions
+    • Include deadlines, limits, and eligibility criteria
+    • If the policy has changed recently, note both current and previous versions if available
+    • For IT policies, include any security implications
+    """.strip()
+    
+    # Build the full prompt with better structure
+    prompt = f"""
+    {system_prompt}
+    
+    {policy_guidance}
+    
+    {example_qna}
+    
+    RELEVANT POLICY SECTIONS:
+    {retrieved_context or '[No relevant policy sections found in the knowledge base.]'}
+    
+    USER QUERY:
+    {user_query}
+    
+    RESPONSE:
+    """.strip()
+    
+    return prompt
